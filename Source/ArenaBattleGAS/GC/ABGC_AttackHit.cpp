@@ -21,6 +21,16 @@ bool UABGC_AttackHit::OnExecute_Implementation(AActor* Target, const FGameplayCu
 	{
 		UGameplayStatics::SpawnEmitterAtLocation(Target, ParticleSystem, HitResult->ImpactPoint, FRotator::ZeroRotator, true);
 	}
+	else
+	{
+		for (const auto& TargetActor : Parameters.EffectContext.Get()->GetActors())
+		{
+			if (TargetActor.Get())
+			{
+				UGameplayStatics::SpawnEmitterAtLocation(Target, ParticleSystem, TargetActor.Get()->GetActorLocation(), FRotator::ZeroRotator, true);
+			}
+		}
+	}
 
 	return false;
 }
