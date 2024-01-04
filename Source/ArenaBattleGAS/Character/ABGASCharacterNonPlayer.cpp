@@ -1,18 +1,24 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "Player/ABGASPlayerState.h"
+#include "Character/ABGASCharacterNonPlayer.h"
 #include "AbilitySystemComponent.h"
 #include "Attribute/ABCharacterAttributeSet.h"
 
-AABGASPlayerState::AABGASPlayerState()
+AABGASCharacterNonPlayer::AABGASCharacterNonPlayer()
 {
 	ASC = CreateDefaultSubobject<UAbilitySystemComponent>(TEXT("ASC"));
-	//ASC->SetIsReplicated(true);
 	AttributeSet = CreateDefaultSubobject<UABCharacterAttributeSet>(TEXT("AttributeSet"));
 }
 
-UAbilitySystemComponent* AABGASPlayerState::GetAbilitySystemComponent() const
+UAbilitySystemComponent* AABGASCharacterNonPlayer::GetAbilitySystemComponent() const
 {
 	return ASC;
+}
+
+void AABGASCharacterNonPlayer::PossessedBy(AController* NewController)
+{
+	Super::PossessedBy(NewController);
+
+	ASC->InitAbilityActorInfo(this, this);
 }
