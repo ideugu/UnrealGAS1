@@ -8,6 +8,7 @@
 #include "GA/TA/ABTA_Trace.h"
 #include "Attribute/ABCharacterAttributeSet.h"
 #include "ArenaBattleGAS.h"
+#include "Tag/ABGameplayTag.h"
 
 UABGA_AttackHitCheck::UABGA_AttackHitCheck()
 {
@@ -17,6 +18,8 @@ UABGA_AttackHitCheck::UABGA_AttackHitCheck()
 void UABGA_AttackHitCheck::ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, const FGameplayEventData* TriggerEventData)
 {
 	Super::ActivateAbility(Handle, ActorInfo, ActivationInfo, TriggerEventData);
+
+	CurrentLevel = TriggerEventData->EventMagnitude;
 
 	UABAT_Trace* AttackTraceTask = UABAT_Trace::CreateTask(this, AABTA_Trace::StaticClass());
 	AttackTraceTask->OnComplete.AddDynamic(this, &UABGA_AttackHitCheck::OnTraceResultCallback);
@@ -31,24 +34,30 @@ void UABGA_AttackHitCheck::OnTraceResultCallback(const FGameplayAbilityTargetDat
 		ABGAS_LOG(LogABGAS, Log, TEXT("Target %s Detected"), *(HitResult.GetActor()->GetName()));
 
 		UAbilitySystemComponent* SourceASC = GetAbilitySystemComponentFromActorInfo_Checked();
-		UAbilitySystemComponent* TargetASC = UAbilitySystemBlueprintLibrary::GetAbilitySystemComponent(HitResult.GetActor());
-		if (!SourceASC || !TargetASC)
-		{
-			ABGAS_LOG(LogABGAS, Error, TEXT("ASC not found!"));
-			return;
-		}
+		//UAbilitySystemComponent* TargetASC = UAbilitySystemBlueprintLibrary::GetAbilitySystemComponent(HitResult.GetActor());
+		//if (!SourceASC || !TargetASC)
+		//{
+		//	ABGAS_LOG(LogABGAS, Error, TEXT("ASC not found!"));
+		//	return;
+		//}
 
 		const UABCharacterAttributeSet* SourceAttribute = SourceASC->GetSet<UABCharacterAttributeSet>();
-		UABCharacterAttributeSet* TargetAttribute = const_cast<UABCharacterAttributeSet*>(TargetASC->GetSet<UABCharacterAttributeSet>());
-		if (!SourceAttribute || !TargetAttribute)
+		//UABCharacterAttributeSet* TargetAttribute = const_cast<UABCharacterAttributeSet*>(TargetASC->GetSet<UABCharacterAttributeSet>());
+		//if (!SourceAttribute || !TargetAttribute)
+		//{
+		//	ABGAS_LOG(LogABGAS, Error, TEXT("ASC not found!"));
+		//	return;
+		//}
+
+		//const float AttackDamage = SourceAttribute->GetAttackRate();
+		//TargetAttribute->SetHealth(TargetAttribute->GetHealth() - AttackDamage);
+
+		FGameplayEffectSpecHandle EffectSpecHandle = MakeOutgoingGameplayEffectSpec(AttackDamageEffect, CurrentLevel);
+		if (EffectSpecHandle.IsValid())
 		{
-			ABGAS_LOG(LogABGAS, Error, TEXT("ASC not found!"));
-			return;
+			EffectSpecHandle.Data->SetSetByCallerMagnitude(ABTAG_DATA_DAMAGE, -SourceAttribute->GetAttackRate());			
+			ApplyGameplayEffectSpecToTarget(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, EffectSpecHandle, TargetDataHandle);
 		}
-
-		const float AttackDamage = SourceAttribute->GetAttackRate();
-		TargetAttribute->SetHealth(TargetAttribute->GetHealth() - AttackDamage);
-
 	}
 
 	bool bReplicatedEndAbility = true;

@@ -26,4 +26,10 @@ protected:
 
 	UPROPERTY()
 	TObjectPtr<class UABCharacterAttributeSet> AttributeSet;
+
+	UPROPERTY(EditAnywhere, Category = GAS)
+	TSubclassOf<class UGameplayEffect> InitStatEffect;
+
+	UPROPERTY(EditAnywhere, Category = GAS)
+	float Level;
 };
