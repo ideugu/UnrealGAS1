@@ -19,7 +19,8 @@
 			"AdditionalDependencies": [
 				"Engine",
 				"GameplayAbilities",
-				"ArenaBattle"
+				"ArenaBattle",
+				"UMG"
 			]
 		}
 	],
