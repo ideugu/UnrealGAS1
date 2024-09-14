@@ -14,6 +14,12 @@ void UABGA_Skill::ActivateAbility(const FGameplayAbilitySpecHandle Handle, const
 {
 	Super::ActivateAbility(Handle, ActorInfo, ActivationInfo, TriggerEventData);
 
+	if (!CommitAbility(Handle, ActorInfo, ActivationInfo))
+	{
+		EndAbility(Handle, ActorInfo, ActivationInfo, false, true);
+		return;
+	}
+	
 	AABGASCharacterPlayer* TargetCharacter = Cast<AABGASCharacterPlayer>(ActorInfo->AvatarActor.Get());
 	if (!TargetCharacter)
 	{

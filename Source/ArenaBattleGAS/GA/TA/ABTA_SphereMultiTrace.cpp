@@ -9,6 +9,7 @@
 #include "Physics/ABCollision.h"
 #include "DrawDebugHelpers.h"
 #include "Attribute/ABCharacterSkillAttributeSet.h"
+#include "Engine/OverlapResult.h"
 
 FGameplayAbilityTargetDataHandle AABTA_SphereMultiTrace::MakeTargetData() const
 {
